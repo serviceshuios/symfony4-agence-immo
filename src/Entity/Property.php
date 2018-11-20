@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PropertyRepository")
- * @UniqueEntity("titre")
+ * @UniqueEntity("title")
  */
 class Property
 {
