@@ -6,6 +6,8 @@ use App\Repository\PropertyRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class PropertyController extends AbstractController
 {
@@ -22,30 +24,17 @@ class PropertyController extends AbstractController
  * @Route("/biens",name="property.index")
  * @return Response
  */
-  public function index(): Response
+  public function index(PaginatorInterface $paginator, Request $request): Response
   {
-    //AJOUT EN BASE DE DONNEES
-    /*$property = new Property();
-    $property -> setTitle("mon premier bien")
-              ->setPrice(200000)
-              ->setRooms(4)
-              ->setBedrooms(3)
-              ->setDescription("une petite description")
-              ->setSurface(60)
-              ->setFloor(4)
-              ->setHeat(1)
-              ->setCity("MontPellier")
-              ->setAddress("15 boulevard Gambetta")
-              ->setPostalCode("34000");
 
-              $em = $this->getDoctrine()->getManager();
-              $em->persist($property);
-              $em->flush();*/
-              //$property = $this->repository->findAll();
-              $property = $this->repository->findAllVisible();
-              dump($property);
+    $properties = $paginator->paginate(
+      $this->repository->findAllVisibleQuery(),
+      $request->query->getint('page',1),
+      12
+    );
     return $this->render('property/home.html.twig', [
-      'current_menu' => 'properties'
+      'current_menu' => 'properties',
+      'properties' => $properties
     ]);
   }
 /**
