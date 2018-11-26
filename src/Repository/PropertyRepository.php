@@ -6,6 +6,8 @@ use App\Entity\Property;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Doctrine\ORM\Query;
+use App\Entity\PropertySearch;
+
 /**
  * @method Property|null find($id, $lockMode = null, $lockVersion = null)
  * @method Property|null findOneBy(array $criteria, array $orderBy = null)
@@ -21,10 +23,20 @@ class PropertyRepository extends ServiceEntityRepository
     /**
       * @return Query
      */
-    public function findAllVisibleQuery():Query
+    public function findAllVisibleQuery(PropertySearch $search):Query
     {
-      return $this->findVisibleQuery()
-        ->getQuery();
+      $query =  $this->findVisibleQuery();
+      if($search->getMaxPrice()) {
+        $query = $query
+            ->andWhere('p.price < :maxprice')
+            ->setParameter('maxprice',$search->getMaxPrice());
+       }
+       if($search->getMinSurface()) {
+         $query = $query
+             ->andWhere('p.surface >= :minsurface')
+             ->setParameter('minsurface',$search->getMinSurface());
+        }
+        return $query->getQuery();
     }
     /**
       * @return Property[] Returns an array of Property objects
